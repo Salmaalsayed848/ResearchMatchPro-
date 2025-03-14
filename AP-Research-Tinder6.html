@@ -1,0 +1,669 @@
+<!-- This software is proprietary and owned by Salma Alsayed. It may not be copied, 
+modified, distributed, or used in any way without explicit written consent 
+from the author. Any unauthorized use of this software is strictly prohibited 
+and may result in legal action. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchMatch Pro+</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f1f2f2, #faf9f9);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            background: linear-gradient(45deg, #8fcf8a, #5a964e);
+            color: rgb(2, 2, 2);
+            padding: 30px;
+            text-align: center;
+            animation: pulse 8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+        }
+
+        .question-container {
+            padding: 40px 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-btn:hover {
+            background: #494d57;
+            color: white;
+        }
+
+        .option-btn span {
+            margin-left: 10px;
+        }
+
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #ddd;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #0c0c0c;
+            transition: width 0.3s ease;
+        }
+
+        #result {
+            padding: 30px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topic-box {
+            background: linear-gradient(135deg, #fff5f5, #fff);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            background: #03480c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, #034b15 10%, transparent 10.01%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .btn:hover::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .resource-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .resource-link {
+            background: #abecae;
+            color: rgb(3, 3, 3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #043d1a;
+        }
+
+        .tips-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .back-btn {
+            background: #0a4607;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .back-btn:hover {
+            background: #d84315;
+        }
+
+        .feedback-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-btn:hover {
+            background: #388e3c;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>ResearchMatch Pro+ 🌟</h1>
+            <p>Discover Your Perfect Research Topic Step-by-Step</p>
+        </header>
+
+        <!-- Question 1 -->
+        <div class="question-container active" data-question="1">
+            <div class="question-title">1. What problem keeps you up at night? 🤔</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Climate change acceleration 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social inequality gaps 👥</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Cultural heritage loss 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Mental health crises ❤️‍🩹</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-container" data-question="2">
+            <div class="question-title">2. Your ideal career role? 💼</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Tech innovator 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Policy advisor 📜</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative director 🎬</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Entrepreneur 💡</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-container" data-question="3">
+            <div class="question-title">3. What's your hidden talent? ✨</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Solving complex puzzles 🧩</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Mediating conflicts 🤝</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative writing ✍️</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Empathetic listening 👂</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-container" data-question="4">
+            <div class="question-title">4. Preferred way to create impact? 🌍</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technological innovation 🛠️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Community organizing 👫</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Artistic expression 🎭</span></button>
+                <button class="option-btn" onclick="selectOption('environment')"><span>Environmental conservation 🌱</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-container" data-question="5">
+            <div class="question-title">5. Your inspirational figure? 🌟</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Marie Curie 🔬</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Nelson Mandela 🕊️</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Frida Kahlo 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Elon Musk 🚀</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question-container" data-question="6">
+            <div class="question-title">6. Preferred weekend activity? 🌞</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Coding projects 💻</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Volunteering 🤝</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Painting/writing 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Yoga/meditation 🧘‍♀️</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+             <!-- Question 7 -->
+        <div class="question-container" data-question="7">
+            <div class="question-title">7. Preferred learning format? 📚</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Online courses 🖥️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Workshops 🎤</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Masterclasses 🎭</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Mentorship programs 🤝</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question-container" data-question="8">
+            <div class="question-title">8. Preferred problem type? 🧩</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technical puzzles 🖥️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Interpersonal conflicts 🤝</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative blocks 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Health disparities ❤️‍🩹</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="question-container" data-question="9">
+            <div class="question-title">9. Preferred way to help a friend? 🤗</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Fix their tech issues 💻</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Listen to their problems 👂</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Create something for them 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Cook them healthy meals 🍳</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="question-container" data-question="10">
+            <div class="question-title">10. Preferred documentary topic? 📺</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Space exploration 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social justice movements 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Art history 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('environment')"><span>Climate change 🌱</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="question-container" data-question="11">
+            <div class="question-title">11. Preferred way to spend free time? ⏰</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Tinkering with gadgets 🛠️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Attending social events 🎉</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Visiting museums 🖼️</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Networking events 💼</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="question-container" data-question="12">
+            <div class="question-title">12. Preferred type of book? 📖</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Science fiction 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Historical non-fiction 📜</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Poetry collections ✍️</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Self-help guides 📈</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="question-container" data-question="13">
+            <div class="question-title">13. Preferred way to relax? 🛋️</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Solving puzzles 🧩</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social gatherings 🎉</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Playing music 🎵</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Nature walks 🌿</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 14 -->
+        <div class="question-container" data-question="14">
+            <div class="question-title">14. Preferred way to learn new skills? 🧑‍🏫</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Online tutorials 🖥️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Group classes 👥</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Hands-on practice 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Mentorship 🤝</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 15 -->
+        <div class="question-container" data-question="15">
+            <div class="question-title">15. Preferred way to contribute to society? 🌍</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Developing new technologies 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Community organizing 👫</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Public art projects 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Health campaigns ❤️‍🩹</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 16 -->
+        <div class="question-container" data-question="16">
+            <div class="question-title">16. Preferred type of challenge? 🤔</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technical problems 🛠️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social conflicts 🤝</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative blocks 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Financial optimization 💸</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 17 -->
+        <div class="question-container" data-question="17">
+            <div class="question-title">17. Preferred way to express yourself? 🎤</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Data visualization 📊</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Public speaking 🎤</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Artistic creation 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Writing journals ✍️</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 18 -->
+        <div class="question-container" data-question="18">
+            <div class="question-title">18. Preferred way to approach problems? 🧠</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Analytical approach 📊</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Collaborative approach 👥</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative approach 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Strategic approach 📈</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 19 -->
+        <div class="question-container" data-question="19">
+            <div class="question-title">19. Preferred future vision? 🌟</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technological utopia 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Equitable society 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Cultural renaissance 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('environment')"><span>Sustainable planet 🌱</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 20 -->
+        <div class="question-container" data-question="20">
+            <div class="question-title">20. What's your ideal work schedule? ⏰</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Flexible tech hours 🖥️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Community-driven schedules 👥</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative spurts 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>9-5 corporate hours 💼</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 21 -->
+        <div class="question-container" data-question="21">
+            <div class="question-title">21. Preferred way to overcome challenges? 💪</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Systematic analysis 📊</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Team collaboration 👥</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative brainstorming 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Holistic approaches 🧘‍♀️</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 22 -->
+        <div class="question-container" data-question="22">
+            <div class="question-title">22. Preferred type of innovation? 🌟</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technological 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Artistic 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('environment')"><span>Environmental 🌱</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 23 -->
+        <div class="question-container" data-question="23">
+            <div class="question-title">23. Preferred way to measure success? 📈</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technical achievements 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social impact 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Creative recognition 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('business')"><span>Financial growth 💸</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 24 -->
+        <div class="question-container" data-question="24">
+            <div class="question-title">24. Preferred type of lifelong learning? 📚</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Tech certifications 🖥️</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Cultural studies 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Artistic techniques 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('health')"><span>Wellness practices 🧘‍♀️</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Question 25 -->
+        <div class="question-container" data-question="25">
+            <div class="question-title">25. Preferred legacy? 🏛️</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('stem')"><span>Technological breakthrough 🚀</span></button>
+                <button class="option-btn" onclick="selectOption('social')"><span>Social reform 🌍</span></button>
+                <button class="option-btn" onclick="selectOption('arts')"><span>Cultural masterpiece 🎨</span></button>
+                <button class="option-btn" onclick="selectOption('environment')"><span>Environmental restoration 🌱</span></button>
+            </div>
+            <button class="back-btn" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="result">
+            <h2>Your Research Match: 🌟</h2>
+            <div id="field"></div>
+            <div id="topic"></div>
+            <div class="tips-section">
+                <h3>Tips for Choosing a Research Topic:</h3>
+                <ul>
+                    <li>Choose a topic that excites you and aligns with your interests.</li>
+                    <li>Ensure the topic is specific enough to explore deeply but broad enough to find resources.</li>
+                    <li>Consult academic journals, books, and online databases for inspiration.</li>
+                    <li>Reach out to teachers or mentors for guidance.</li>
+                    <li>You can use these sources below to find academinc journals to help with your paper.</li> 
+                </ul>
+            </div>
+            <div class="resource-links">
+                <a href="https://scholar.google.com" class="resource-link" target="_blank">Google Scholar 📚</a>
+                <a href="https://www.jstor.org" class="resource-link" target="_blank">JSTOR 🔍</a>
+                <a href="https://owl.purdue.edu" class="resource-link" target="_blank">Purdue OWL ✍️</a>
+            </div>
+            <button class="btn" onclick="location.reload()">Try Again</button>
+            <a href="mailto:1432@rawdalsaleheen.edu.kw?subject=Feedback%20on%20ResearchMatch%20Pro%2B&body=Hello%2C%0D%0AI%20would%20like%20to%20provide%20feedback%20on%20the%20ResearchMatch%20Pro%2B%20tool.%0D%0A%0D%0AHere%20is%20my%20feedback%3A" class="feedback-btn">Provide Feedback 📝</a>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        const scores = {
+            stem: 0,
+            social: 0,
+            arts: 0,
+            environment: 0,
+            business: 0,
+            health: 0
+        };
+
+        function selectOption(category) {
+            // Update score for the selected category
+            scores[category]++;
+
+            // Move to the next question
+            document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.remove('active');
+            currentQuestion++;
+
+            // Update progress bar
+            const progress = (currentQuestion / 25) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            if (currentQuestion <= 25) {
+                // Show the next question
+                document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.add('active');
+            } else {
+                // Show results
+                showResults();
+            }
+        }
+
+        function showResults() {
+            // Determine highest category
+            let maxField = Object.keys(scores).reduce((a, b) => 
+                scores[a] > scores[b] ? a : b
+            );
+
+            // Research fields and topics database
+            const fields = {
+                stem: {
+                    field: 'STEM Innovation 🚀',
+                    topics: ['AI Ethics in Healthcare', 'Quantum Computing Applications', 'Renewable Energy Innovations']
+                },
+                social: {
+                    field: 'Social Impact 🌍',
+                    topics: ['Social Media Impact on Youth', 'Urbanization Patterns', 'Cultural Identity in Globalization']
+                },
+                arts: {
+                    field: 'Creative Expression 🎨',
+                    topics: ['Digital Art in Modern Communication', 'Music Therapy Effects', 'Postmodern Literature Analysis']
+                },
+                environment: {
+                    field: 'Sustainability 🌿',
+                    topics: ['Sustainable Urban Development', 'Wildlife Conservation Strategies', 'Plastic Pollution Solutions']
+                },
+                business: {
+                    field: 'Entrepreneurship 💼',
+                    topics: ['Cryptocurrency Market Analysis', 'Sustainable Business Models', 'Consumer Behavior in E-commerce']
+                },
+                health: {
+                    field: 'Health Sciences 🩺',
+                    topics: ['Telemedicine Effectiveness', 'Mental Health in Digital Age', 'Nutrigenomics Research']
+                }
+            };
+
+            // Get random topic from top category
+            const selected = fields[maxField];
+            const topic = selected.topics[Math.floor(Math.random() * selected.topics.length)];
+
+            // Display results
+            document.getElementById('field').innerHTML = `
+                <h3>${selected.field}</h3>
+                <div class="topic-box">${topic}</div>
+            `;
+
+            // Hide all questions and show result section
+            document.querySelectorAll('.question-container').forEach(q => q.style.display = 'none');
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function goBack() {
+    if (currentQuestion > 1) {
+        // Remove the active class from the current question
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.remove('active');
+        
+        // Decrement the current question counter
+        currentQuestion--;
+
+        // Add the active class to the previous question
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.add('active');
+
+        // Update the progress bar
+        const progress = (currentQuestion / 25) * 100;
+        document.getElementById('progressBar').style.width = `${progress}%`;
+    }
+}
+    </script>
+</body>
+</html>
