@@ -130,7 +130,21 @@ and may result in legal action. -->
             color: #333;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
+        .resource-link {
+    background: #abecae;
+    color: rgb(3, 3, 3);
+    padding: 10px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 20px;
+}
 
+.resource-link:hover {
+    background: #043d1a;
+}
         .btn {
             background: #03480c;
             color: white;
@@ -600,38 +614,85 @@ and may result in legal action. -->
         }
 
         function showResults() {
-            // Determine highest category
-            let maxField = Object.keys(scores).reduce((a, b) => 
-                scores[a] > scores[b] ? a : b
-            );
+    // Determine highest category
+    let maxField = Object.keys(scores).reduce((a, b) => 
+        scores[a] > scores[b] ? a : b
+    );
+
+    // Get random topic from top category
+    const selected = fields[maxField];
+    const topic = selected.topics[Math.floor(Math.random() * selected.topics.length)];
+
+    // Display results
+    document.getElementById('field').innerHTML = `
+        <h3>${selected.field}</h3>
+        <div class="topic-box">${topic.name}</div>
+    `;
+
+    // Add a "Read More" button with the topic's URL
+    const readMoreButton = document.createElement('a');
+    readMoreButton.href = topic.url;
+    readMoreButton.target = '_blank'; // Open link in a new tab
+    readMoreButton.classList.add('resource-link');
+    readMoreButton.textContent = 'Read More About This Topic 📚';
+    document.getElementById('result').appendChild(readMoreButton);
+
+    // Hide all questions and show result section
+    document.querySelectorAll('.question-container').forEach(q => q.style.display = 'none');
+    document.getElementById('result').style.display = 'block';
+}
 
             // Research fields and topics database
             const fields = {
-                stem: {
-                    field: 'STEM Innovation 🚀',
-                    topics: ['AI Ethics in Healthcare', 'Quantum Computing Applications', 'Renewable Energy Innovations']
-                },
-                social: {
-                    field: 'Social Impact 🌍',
-                    topics: ['Social Media Impact on Youth', 'Urbanization Patterns', 'Cultural Identity in Globalization']
-                },
-                arts: {
-                    field: 'Creative Expression 🎨',
-                    topics: ['Digital Art in Modern Communication', 'Music Therapy Effects', 'Postmodern Literature Analysis']
-                },
-                environment: {
-                    field: 'Sustainability 🌿',
-                    topics: ['Sustainable Urban Development', 'Wildlife Conservation Strategies', 'Plastic Pollution Solutions']
-                },
-                business: {
-                    field: 'Entrepreneurship 💼',
-                    topics: ['Cryptocurrency Market Analysis', 'Sustainable Business Models', 'Consumer Behavior in E-commerce']
-                },
-                health: {
-                    field: 'Health Sciences 🩺',
-                    topics: ['Telemedicine Effectiveness', 'Mental Health in Digital Age', 'Nutrigenomics Research']
-                }
-            };
+    stem: {
+        field: 'STEM Innovation 🚀',
+        topics: [
+            { name: 'AI Ethics in Healthcare', url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7384659/' },
+            { name: 'Quantum Computing Applications', url: 'https://www.ibm.com/quantum-computing/' },
+            { name: 'Renewable Energy Innovations', url: 'https://www.irena.org/renewable-energy' }
+        ]
+    },
+    social: {
+        field: 'Social Impact 🌍',
+        topics: [
+            { name: 'Social Media Impact on Youth', url: 'https://www.pewresearch.org/internet/2022/08/10/teens-social-media-and-technology-2022/' },
+            { name: 'Urbanization Patterns', url: 'https://www.un.org/development/desa/en/news/population/2018-revision-of-world-urbanization-prospects.html' },
+            { name: 'Cultural Identity in Globalization', url: 'https://www.britannica.com/topic/globalization/Cultural-globalization' }
+        ]
+    },
+    arts: {
+        field: 'Creative Expression 🎨',
+        topics: [
+            { name: 'Digital Art in Modern Communication', url: 'https://www.tate.org.uk/art/art-terms/d/digital-art' },
+            { name: 'Music Therapy Effects', url: 'https://www.musictherapy.org/research/' },
+            { name: 'Postmodern Literature Analysis', url: 'https://www.britannica.com/art/postmodernism-literature' }
+        ]
+    },
+    environment: {
+        field: 'Sustainability 🌿',
+        topics: [
+            { name: 'Sustainable Urban Development', url: 'https://www.worldbank.org/en/topic/sustainablecities' },
+            { name: 'Wildlife Conservation Strategies', url: 'https://www.worldwildlife.org/' },
+            { name: 'Plastic Pollution Solutions', url: 'https://www.nationalgeographic.com/environment/article/plastic-pollution' }
+        ]
+    },
+    business: {
+        field: 'Entrepreneurship 💼',
+        topics: [
+            { name: 'Cryptocurrency Market Analysis', url: 'https://www.coindesk.com/markets' },
+            { name: 'Sustainable Business Models', url: 'https://hbr.org/2021/05/the-case-for-sustainable-business-models' },
+            { name: 'Consumer Behavior in E-commerce', url: 'https://www.investopedia.com/terms/c/consumer-behavior.asp' }
+        ]
+    },
+    health: {
+        field: 'Health Sciences 🩺',
+        topics: [
+            { name: 'Telemedicine Effectiveness', url: 'https://www.mayoclinic.org/telemedicine' },
+            { name: 'Mental Health in Digital Age', url: 'https://www.who.int/news-room/fact-sheets/detail/mental-health' },
+            { name: 'Nutrigenomics Research', url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3279743/' }
+        ]
+    }
+};
 
             // Get random topic from top category
             const selected = fields[maxField];
@@ -646,7 +707,7 @@ and may result in legal action. -->
             // Hide all questions and show result section
             document.querySelectorAll('.question-container').forEach(q => q.style.display = 'none');
             document.getElementById('result').style.display = 'block';
-        }
+
 
         function goBack() {
     if (currentQuestion > 1) {
